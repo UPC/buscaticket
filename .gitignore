@@ -1,0 +1,4 @@
+*.pyc
+*settings*
+!settings.py
+!settings_sample.py
