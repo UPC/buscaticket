@@ -9,4 +9,5 @@ $ sudo easy_install pymongo
 I executar
 
 $ python omplir.py
+
 $ python buscar.py albert
