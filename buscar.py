@@ -13,4 +13,10 @@ if len(sys.argv)<1:
   exit()
 
 tickets=busca(sys.argv[1])
-for t in tickets: print t 
+for t in tickets: 
+  print t["codiTiquet"] 
+  print "https://gn6.upc.edu/tiquets/control/tiquetDetallDadesGenerals?requirementId=%s" % t["codiTiquet"]
+  print t["assumpte"]
+  print t["dataCreacio"]
+  print t["dataTancament"]  
+  print ""
