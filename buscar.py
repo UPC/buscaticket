@@ -1,7 +1,10 @@
 import sys
-from pymongo import MongoClient
+import pymongo
 
 def busca(text):
-  client = MongoClient()  
+  client = pymongo.MongoClient()  
   db=client.ticketsdb
-  return list(db.tickets.find({"$text":{"$search":text}}))
+  return list(db.tickets.find({"$text":{"$search":text}})
+  	                    .sort([("dataTancament",pymongo.DESCENDING), ("dataCreacio",pymongo.DESCENDING)])
+  )
+

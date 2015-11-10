@@ -3,6 +3,7 @@ from datetime import date
 from pymongo import MongoClient
 from pymongo import TEXT
 from soa.tiquets import GestioTiquets
+from soa.tiquets import GestioTiquets2
 
 class Omplir:
 
@@ -53,7 +54,7 @@ class Omplir:
     for t in self.db.tickets.find(): print t
 
 print "Insertant dades al mongo..."
-omplir=Omplir(GestioTiquets())
+omplir=Omplir(GestioTiquets2())
 if len(sys.argv)>1 and sys.argv[1]=='-c': omplir.crea()
 omplir.inserta_nous_tickets()
 omplir.mostra()
