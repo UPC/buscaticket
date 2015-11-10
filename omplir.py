@@ -4,6 +4,7 @@ from pymongo import MongoClient
 from pymongo import TEXT
 from soa.tiquets import GestioTiquets
 from soa.tiquets import GestioTiquets2
+import logging
 
 class Omplir:
 
@@ -13,12 +14,24 @@ class Omplir:
     self.gn6=gn6
 
   def crea(self):
-    for i in range(2010,2016):
+    self.db.tickets.remove()
+    for i in range(2011,2016):
       print "Insertem tickets oberts de l'any %d" % i
       inici="01-01-%d" % i
       fi="01-01-%d" % (i+1)
-      tickets=self.gn6.consulta_tiquets(dataCreacioInici=inici,dataCreacioFi=fi)
+      tickets=self.gn6.consulta_tiquets(dataCreacioInici=inici,dataCreacioFi=fi,estat="TIQUET_STATUS_OBERT")
+      print "%d tickets oberts" % len(tickets)
       self.inserta_tickets(tickets)
+      tickets=self.gn6.consulta_tiquets(dataCreacioInici=inici,dataCreacioFi=fi,estat="TIQUET_STATUS_PEND")
+      print "%d tickets pendents" % len(tickets)
+      self.inserta_tickets(tickets)
+      tickets=self.gn6.consulta_tiquets(dataCreacioInici=inici,dataCreacioFi=fi,estat="ESTAT_OBERT_PENDENT")
+      print "%d tickets oberts pendents" % len(tickets)
+      self.inserta_tickets(tickets)      
+      tickets=self.gn6.consulta_tiquets(dataTancamentInici=inici,dataTancamentFi=fi,estat="TIQUET_STATUS_TANCAT")
+      print "%d tickets tancats" % len(tickets)
+      self.inserta_tickets(tickets)      
+
     self.db.tickets.create_index([("$**",TEXT)],default_language="english")    
     self.guarda_actualitzacio()
 
@@ -36,10 +49,10 @@ class Omplir:
     actualitzacio=self.ultima_actualitzacio()
     avui=self.avui()
     print "Insertant tickets entre %s i %s" % (actualitzacio, avui)
-    oberts=self.gn6.consulta_tiquets(dataCreacioInici=actualitzacio,dataCreacioFi=avui)
+    oberts=self.gn6.consulta_tiquets(dataCreacioInici=actualitzacio,dataCreacioFi=avui,estat="TIQUET_STATUS_OBERT")
     print "%d tickets oberts" % len(oberts)
     self.inserta_tickets(oberts)
-    tancats=self.gn6.consulta_tiquets(dataTancamentInici=actualitzacio,dataTancamentFi=avui)
+    tancats=self.gn6.consulta_tiquets(dataTancamentInici=actualitzacio,dataTancamentFi=avui,estat="TIQUET_STATUS_TANCAT")
     print "%d tickets tancats" % len(tancats)
     self.inserta_tickets(tancats)
     self.guarda_actualitzacio()
@@ -48,13 +61,20 @@ class Omplir:
     for t in tickets: self.inserta_ticket(t)  
 
   def inserta_ticket(self,ticket):
-    self.db.tickets.replace_one({"_id":ticket["codi"]},ticket)
+    ticket=self.convertir_a_dict(ticket)
+    ticket["_id"]=ticket["codiTiquet"]
+    self.db.tickets.replace_one({"_id":ticket["_id"]},ticket,True)
+    print "Ticket %s creat" % ticket["_id"]
+
+  def convertir_a_dict(self,ticket):    
+    return dict((name, unicode(getattr(ticket, name))) for name in dir(ticket) if not name.startswith('__')) 
 
   def mostra(self):
     for t in self.db.tickets.find(): print t
 
 print "Insertant dades al mongo..."
-omplir=Omplir(GestioTiquets2())
+logging.getLogger('suds').setLevel(logging.CRITICAL)
+omplir=Omplir(GestioTiquets())
 if len(sys.argv)>1 and sys.argv[1]=='-c': omplir.crea()
 omplir.inserta_nous_tickets()
-omplir.mostra()
+#omplir.mostra()
