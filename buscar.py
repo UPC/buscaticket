@@ -8,3 +8,5 @@ def busca(text):
   	                    .sort([("dataTancament",pymongo.DESCENDING), ("dataCreacio",pymongo.DESCENDING)])
   )
 
+  #.sort([("dataTancament",pymongo.DESCENDING), ("dataCreacio",pymongo.DESCENDING)])
+

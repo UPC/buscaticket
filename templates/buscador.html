@@ -20,14 +20,16 @@
   			</div>
 		</form>
       </div>
-<h3>Resultats: {{resultat|count}}</h3>
+<h3>Resultats: {{resultats|count}}</h3>
 {% for resultat in resultats %}
 <h4>
   <a href="https://gn6.upc.edu/tiquets/control/tiquetDetallDadesGenerals?requirementId={{resultat.codiTiquet}}"/>{{resultat.assumpte}}</h4>
-  {% if resultat.dataTancament %} <span class="label label-default">Tancat</span> {{resultat.dataTancament}} {% endif %}
-  {% if resultat.dataTancament %} <span class="label label-default">Obert</span> {{resultat.dataObertura}} {% endif %}
+  {% if resultat.dataTancament!='None' %} <span class="label label-success">Tancat</span> {{resultat.dataTancament}} 
+  {% else %}
+  {% if resultat.dataCreacio is defined %} <span class="label label-danger">Obert</span> {{resultat.dataCreacio}} {% endif %}
+  {% endif %}
+  <br><br>
 {% endfor %}
-</ul>
 </div>
 </body>
 </html>
