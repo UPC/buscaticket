@@ -15,24 +15,36 @@ class Omplir:
 
   def crea(self):
     self.db.tickets.remove()
-    for i in range(2015,2016):
-      print "Insertem tickets oberts de l'any %d" % i
-      inici="01-01-%d" % i
-      fi="01-01-%d" % (i+1)
-      tickets=self.gn6.consulta_tiquets_dades(dataCreacioInici=inici,dataCreacioFi=fi,estat="TIQUET_STATUS_OBERT")
-      print "%d tickets oberts" % len(tickets)
-      self.inserta_tickets(tickets)
-      tickets=self.gn6.consulta_tiquets_dades(dataCreacioInici=inici,dataCreacioFi=fi,estat="TIQUET_STATUS_PEND")
-      print "%d tickets pendents" % len(tickets)
-      self.inserta_tickets(tickets)
-      tickets=self.gn6.consulta_tiquets_dades(dataCreacioInici=inici,dataCreacioFi=fi,estat="ESTAT_OBERT_PENDENT")
-      print "%d tickets oberts pendents" % len(tickets)
-      self.inserta_tickets(tickets)      
-      tickets=self.gn6.consulta_tiquets_dades(dataTancamentInici=inici,dataTancamentFi=fi,estat="TIQUET_STATUS_TANCAT")
-      print "%d tickets tancats" % len(tickets)
-      self.inserta_tickets(tickets)      
+    for i in range(2012,2016):
+      print "Insertem tickets de l'any %d" % i
+      for mes in range(1,12):
+        inici="01-%d-%d" % (mes,i)
+        if mes==12:
+          any_fi=i+1
+          mes_fi=1
+        else:
+          any_fi=i
+          mes_fi=mes+1
+        fi="01-%d-%d" % (mes_fi,any_fi)
+        print "Entre %s i %s" % (inici,fi)
 
-    self.db.tickets.create_index([("$**",TEXT)],default_language="english")    
+        tickets=self.gn6.consulta_tiquets_dades(dataCreacioInici=inici,dataCreacioFi=fi,estat="TIQUET_STATUS_OBERT")
+        print "%d tickets oberts" % len(tickets)
+        self.inserta_tickets(tickets)
+
+        tickets=self.gn6.consulta_tiquets_dades(dataCreacioInici=inici,dataCreacioFi=fi,estat="TIQUET_STATUS_PEND")
+        print "%d tickets pendents" % len(tickets)
+        self.inserta_tickets(tickets)
+
+        tickets=self.gn6.consulta_tiquets_dades(dataCreacioInici=inici,dataCreacioFi=fi,estat="ESTAT_OBERT_PENDENT")
+        print "%d tickets oberts pendents" % len(tickets)
+        self.inserta_tickets(tickets)      
+
+        tickets=self.gn6.consulta_tiquets_dades(dataTancamentInici=inici,dataTancamentFi=fi,estat="TIQUET_STATUS_TANCAT")
+        print "%d tickets tancats" % len(tickets)
+        self.inserta_tickets(tickets)
+
+    self.db.tickets.create_index([("$**",TEXT)],default_language="spanish")    
     self.guarda_actualitzacio()
 
   def guarda_actualitzacio(self):  
@@ -68,7 +80,6 @@ class Omplir:
 
   def convertir_a_dict(self,ticket):    
     ticket=dict((name, unicode(getattr(ticket, name))) for name in dir(ticket) if not name.startswith('__')) 
-    print ticket
     ticket['dataCreacio']=self.convertir_a_date(ticket['dataCreacio'])
     ticket['dataTancament']=self.convertir_a_date(ticket['dataTancament'])
     return ticket
@@ -87,4 +98,4 @@ logging.getLogger('suds').setLevel(logging.CRITICAL)
 omplir=Omplir(GestioTiquets())
 if len(sys.argv)>1 and sys.argv[1]=='-c': omplir.crea()
 omplir.inserta_nous_tickets()
-#omplir.mostra()
+
