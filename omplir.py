@@ -1,9 +1,9 @@
 import sys
 from datetime import date
+from dateutil.parser import parse
 from pymongo import MongoClient
 from pymongo import TEXT
 from soa.tiquets import GestioTiquets
-from soa.tiquets import GestioTiquets2
 import logging
 
 class Omplir:
@@ -15,20 +15,20 @@ class Omplir:
 
   def crea(self):
     self.db.tickets.remove()
-    for i in range(2011,2016):
+    for i in range(2015,2016):
       print "Insertem tickets oberts de l'any %d" % i
       inici="01-01-%d" % i
       fi="01-01-%d" % (i+1)
-      tickets=self.gn6.consulta_tiquets(dataCreacioInici=inici,dataCreacioFi=fi,estat="TIQUET_STATUS_OBERT")
+      tickets=self.gn6.consulta_tiquets_dades(dataCreacioInici=inici,dataCreacioFi=fi,estat="TIQUET_STATUS_OBERT")
       print "%d tickets oberts" % len(tickets)
       self.inserta_tickets(tickets)
-      tickets=self.gn6.consulta_tiquets(dataCreacioInici=inici,dataCreacioFi=fi,estat="TIQUET_STATUS_PEND")
+      tickets=self.gn6.consulta_tiquets_dades(dataCreacioInici=inici,dataCreacioFi=fi,estat="TIQUET_STATUS_PEND")
       print "%d tickets pendents" % len(tickets)
       self.inserta_tickets(tickets)
-      tickets=self.gn6.consulta_tiquets(dataCreacioInici=inici,dataCreacioFi=fi,estat="ESTAT_OBERT_PENDENT")
+      tickets=self.gn6.consulta_tiquets_dades(dataCreacioInici=inici,dataCreacioFi=fi,estat="ESTAT_OBERT_PENDENT")
       print "%d tickets oberts pendents" % len(tickets)
       self.inserta_tickets(tickets)      
-      tickets=self.gn6.consulta_tiquets(dataTancamentInici=inici,dataTancamentFi=fi,estat="TIQUET_STATUS_TANCAT")
+      tickets=self.gn6.consulta_tiquets_dades(dataTancamentInici=inici,dataTancamentFi=fi,estat="TIQUET_STATUS_TANCAT")
       print "%d tickets tancats" % len(tickets)
       self.inserta_tickets(tickets)      
 
@@ -49,10 +49,10 @@ class Omplir:
     actualitzacio=self.ultima_actualitzacio()
     avui=self.avui()
     print "Insertant tickets entre %s i %s" % (actualitzacio, avui)
-    oberts=self.gn6.consulta_tiquets(dataCreacioInici=actualitzacio,dataCreacioFi=avui,estat="TIQUET_STATUS_OBERT")
+    oberts=self.gn6.consulta_tiquets_dades(dataCreacioInici=actualitzacio,dataCreacioFi=avui,estat="TIQUET_STATUS_OBERT")
     print "%d tickets oberts" % len(oberts)
     self.inserta_tickets(oberts)
-    tancats=self.gn6.consulta_tiquets(dataTancamentInici=actualitzacio,dataTancamentFi=avui,estat="TIQUET_STATUS_TANCAT")
+    tancats=self.gn6.consulta_tiquets_dades(dataTancamentInici=actualitzacio,dataTancamentFi=avui,estat="TIQUET_STATUS_TANCAT")
     print "%d tickets tancats" % len(tancats)
     self.inserta_tickets(tancats)
     self.guarda_actualitzacio()
@@ -67,7 +67,17 @@ class Omplir:
     print "Ticket %s creat" % ticket["_id"]
 
   def convertir_a_dict(self,ticket):    
-    return dict((name, unicode(getattr(ticket, name))) for name in dir(ticket) if not name.startswith('__')) 
+    ticket=dict((name, unicode(getattr(ticket, name))) for name in dir(ticket) if not name.startswith('__')) 
+    print ticket
+    ticket['dataCreacio']=self.convertir_a_date(ticket['dataCreacio'])
+    ticket['dataTancament']=self.convertir_a_date(ticket['dataTancament'])
+    return ticket
+
+  def convertir_a_date(self,data):    
+    try:
+      return parse(data)
+    except:
+      return None
 
   def mostra(self):
     for t in self.db.tickets.find(): print t
