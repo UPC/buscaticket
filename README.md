@@ -29,6 +29,9 @@ I llavors executar el servidor
 ```
 $ python buscador.py
 ```
+
+El buscador estarà disponible a
+
 http://localhost:5000/
 
 ## Actualització dels indexos
