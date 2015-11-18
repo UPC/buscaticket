@@ -1,25 +1,39 @@
-Cal instalar el mongo 3
+# Buscaticket
+
+Buscaticket es un buscador de tickets estil google per la plataforma gn6
+
+## Instalació
+
+Cal instalar el mongo 3 (important la versió 3 i no anteriors) i en principi qualsevol versió de Python
 
 http://www.liquidweb.com/kb/how-to-install-mongodb-on-ubuntu-14-04/
 
-Llavors cal instalar el driver de Python, el modul suds i el Flask
+Llavors cal instalar el driver de Python per mongo, el modul suds per webservices i el Flask per aplicacions web
 
+```
 $ sudo easy_install pymongo
-
 $ sudo easy_install suds
-
 $ sudo easy_install Flask
+```
 
 Fer una copia del settings_sample.py a settings_default.py i omplir els valors que hi ha al fitxer
 
 Llavors, amb el mongo en marxa, omplir la BD amb els tickets
-
+```
 $ python omplir.py -c
+```
+
+## Execució
 
 I llavors executar el servidor
-
-$ python buscardor.py
-
+```
+$ python buscador.py
+```
 http://localhost:5000/
 
-Successives invocacions nomes han d'executar python omplir.py per actualitzar els tickets
+## Actualització dels indexos
+
+Per executar els indexos amb els tickets oberts o tancats des de l'ultima actualització
+```
+python omplir.py 
+```
