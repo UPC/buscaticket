@@ -48,7 +48,7 @@ class Consultes:
     any_inici=obrim[0]["_id"]["any"]
     any_fi=tanquem[-1]["_id"]["any"]
     n_oberts=0
-    tickets=[]
+    llistes={'mes':[],'obrim':[],'tanquem':[],'oberts':[]}
     for a in range(any_inici,any_fi+1):
       for s in range(1,13):
         try:
@@ -60,7 +60,8 @@ class Consultes:
         except:
           n_tanquem=0          
         n_oberts+=n_obrim-n_tanquem
-        linia={"_id":{"any":a,periode:s},"obrim":n_obrim,"tanquem":n_tanquem,"oberts":n_oberts}
-        tickets.append(linia)
-        print linia
-    return tickets    
+        llistes['mes'].append("%d-%d-%d" % (a,s,1));
+        llistes['obrim'].append(n_obrim)
+        llistes['tanquem'].append(n_tanquem)
+        llistes['oberts'].append(n_oberts)
+    return llistes
