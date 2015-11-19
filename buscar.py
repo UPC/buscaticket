@@ -1,5 +1,6 @@
 import sys
 import pymongo
+from bson.son import SON
 
 class Consultes:
 
@@ -13,26 +14,43 @@ class Consultes:
      )
 
   def obrim_setmanals(self):
-    return [{"_id":{"any":2014,"setmana":10},"tickets":2},
-            {"_id":{"any":2015,"setmana":3},"tickets":2}]
+    return self.agreguem('week','dataCreacio')
 
   def tanquem_setmanals(self):
-    return [{"_id":{"any":2014,"setmana":11},"tickets":1},
-            {"_id":{"any":2015,"setmana":6},"tickets":2}]
+    return self.agreguem('week','dataTancament')
 
-  def oberts_setmanals(self):
-    obrim=self.obrim_setmanals()
-    tanquem=self.tanquem_setmanals()
+  def obrim_mensuals(self):
+    return self.agreguem('month','dataCreacio')
+
+  def tanquem_mensuals(self):
+    return self.agreguem('month','dataTancament')
+
+  def agreguem(self,periode,tipusData):
+    # La cosa rara del SON es perque un diccionari de python conserva l'ordre
+    pipeline=[
+      {"$match": {tipusData:{"$ne":None}}},
+      {"$project": {periode:{"$"+periode:"$"+tipusData},"any":{"$year":"$"+tipusData}}},
+      {"$group": {"_id": {"any":"$any",periode:"$"+periode}, "tickets": {"$sum":1}}},
+      {"$sort": SON([("_id.any",1),("_id."+periode,1)])}
+    ]
+    print pipeline
+    resultat=list(self.db.tickets.aggregate(pipeline))
+    return resultat
+
+  def oberts_mensuals(self):
+    obrim=self.obrim_mensuals()
+    tanquem=self.tanquem_mensuals()
+    periode="month"
     obrim_map={}
     tanquem_map={}
-    for t in obrim: obrim_map[(t["_id"]["any"],t["_id"]["setmana"])]=t["tickets"]
-    for t in tanquem: tanquem_map[(t["_id"]["any"],t["_id"]["setmana"])]=t["tickets"]
+    for t in obrim: obrim_map[(t["_id"]["any"],t["_id"][periode])]=t["tickets"]
+    for t in tanquem: tanquem_map[(t["_id"]["any"],t["_id"][periode])]=t["tickets"]
     any_inici=obrim[0]["_id"]["any"]
     any_fi=tanquem[-1]["_id"]["any"]
     n_oberts=0
     tickets=[]
     for a in range(any_inici,any_fi+1):
-      for s in range(0,52):
+      for s in range(1,13):
         try:
           n_obrim=obrim_map[(a,s)]
         except:
@@ -42,7 +60,7 @@ class Consultes:
         except:
           n_tanquem=0          
         n_oberts+=n_obrim-n_tanquem
-        linia={"_id":{"any":a,"setmana":s},"obrim":n_obrim,"tanquem":n_tanquem,"oberts":n_oberts}
+        linia={"_id":{"any":a,periode:s},"obrim":n_obrim,"tanquem":n_tanquem,"oberts":n_oberts}
         tickets.append(linia)
         print linia
-    return {"oberts-setmanals":tickets}
+    return tickets    
