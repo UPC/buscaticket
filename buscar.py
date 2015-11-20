@@ -26,14 +26,13 @@ class Consultes:
     return self.agreguem('month','dataTancament')
 
   def agreguem(self,periode,tipusData):
-    # La cosa rara del SON es perque un diccionari de python conserva l'ordre
+    # La cosa rara del SON es perque un diccionari de python no conserva l'ordre i aixo si
     pipeline=[
       {"$match": {tipusData:{"$ne":None}}},
       {"$project": {periode:{"$"+periode:"$"+tipusData},"any":{"$year":"$"+tipusData}}},
       {"$group": {"_id": {"any":"$any",periode:"$"+periode}, "tickets": {"$sum":1}}},
       {"$sort": SON([("_id.any",1),("_id."+periode,1)])}
     ]
-    print pipeline
     resultat=list(self.db.tickets.aggregate(pipeline))
     return resultat
 

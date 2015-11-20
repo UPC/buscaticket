@@ -1,6 +1,6 @@
 import sys
 from datetime import date
-from dateutil.parser import parse
+from datetime import datetime
 from pymongo import MongoClient
 from pymongo import TEXT
 from soa.tiquets import GestioTiquets
@@ -86,7 +86,8 @@ class Omplir:
 
   def convertir_a_date(self,data):    
     try:
-      return parse(data)
+      #23-09-2014 14:00
+      return datetime.strptime(data,'%d-%m-%Y %H:%M')
     except:
       return None
 
