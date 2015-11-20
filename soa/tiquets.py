@@ -16,6 +16,10 @@ class GestioTiquets(SOAService):
     resultat=self.consulta_tiquets(codi=codi)
     return resultat[0]
 
+  def consulta_tiquet_dades(self,codi):
+    resultat=self.consulta_tiquets_dades(codi=codi)
+    return resultat[0]
+
   def consulta_tiquets(self,codi='',estat='',dataCreacioInici='',dataCreacioFi='',dataTancamentInici='',dataTancamentFi='',client='',solicitant='',ip=''):
     resultat=self.client.service.ConsultaTiquets(
       self.username_gn6,

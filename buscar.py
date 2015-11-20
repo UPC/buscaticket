@@ -10,6 +10,11 @@ class Consultes:
 
   def busca(self,text):
     return list(self.db.tickets.find({"$text":{"$search":text}})
+     .sort("estat",1)
+     )
+
+  def busca2(self,text):
+    return list(self.db.tickets.find({"$text":{"$search":text}})
      .sort([("estat",pymongo.ASCENDING),("dataTancament",pymongo.DESCENDING), ("dataCreacio",pymongo.DESCENDING)])
      )
 

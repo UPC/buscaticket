@@ -57,13 +57,14 @@
       </div>
 <h3>Resultats: {{resultats|count}}</h3>
 {% for resultat in resultats %}
-<h4>
-  <a href="https://gn6.upc.edu/tiquets/control/tiquetDetallDadesGenerals?requirementId={{resultat.codiTiquet}}"/>{{resultat.assumpte}}</h4>
+<h4><a href="https://gn6.upc.edu/tiquets/control/tiquetDetallDadesGenerals?requirementId={{resultat.codiTiquet}}"/>{{resultat.assumpte}}</a></h4>
+  <b>{{resultat.dadesContacteSolicitant if resultat.dadesContacteSolicitant != 'None'}} 
+  {{resultat.solicitantNom if resultat.solicitantNom != 'None'}}</b>
   {% if resultat.dataTancament %} <span class="label label-success">Tancat</span> {{resultat.dataTancament}} 
   {% else %}
   {% if resultat.dataCreacio %} <span class="label label-danger">Obert</span> {{resultat.dataCreacio}} {% endif %}
   {% endif %}
-  <br><br>
+  <p>{{resultat.descripcio|striptags|truncate(250,True)}}</p>
 {% endfor %}
 </div>
 </body>
