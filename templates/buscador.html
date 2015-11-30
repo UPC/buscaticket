@@ -9,6 +9,9 @@
 <!-- Load d3.js and c3.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.9/d3.min.js" charset="utf-8"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js"></script>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<script src="http://code.highcharts.com/highcharts.js"></script>
 </head>
 <body>
    <div class="container">
@@ -29,10 +32,39 @@
 
 		<div id="chart"></div>
 		<script>
+    var chart = c3.generate({
+        bindto: '#chart',
+        data: {
+          url:'/oberts-diaris',
+          mimeType: 'json',
+          x:'dia',
+          rows: [
+          ['dia','obrim','tanquem','oberts']
+              ],
+          types: {
+            obrim: 'bar',
+            tanquem: 'bar',
+            oberts: 'area'
+            }
+        },
+        bar : {
+          width: 4
+        },
+        axis: {
+            x: {
+              type: 'timeseries',
+              min: '2015-9-1',
+              tick: {
+                  format: '%Y-%m-%d'
+              }
+              }
+            }
+    });    
+    /*
 		var chart = c3.generate({
 		    bindto: '#chart',
 		    data: {
-		      url:'/oberts-mensuals',
+		      url:'/oberts-diaris',
 		      mimeType: 'json',
 		      x:'mes',
 		      rows: [
@@ -53,6 +85,7 @@
               }
             }
 		});
+*/
 		</script>
       </div>
 <h3>Resultats: {{resultats|count}}</h3>

@@ -16,13 +16,11 @@ def buscador():
 def oberts_setmanals():
 	c=Consultes()
 	return jsonify(c.oberts_mensuals())
-#	return jsonify({
-#  "mes": ['2015-1-1', '2015-2-1', '2015-3-1', '2015-4-1', '2015-5-1'],
-#  "obrim": [180, 150, 300, 70, 120],
-#  "tanquem": [200, 310, 150, 100, 180],
-#  "oberts": [200, 310, 150, 100, 180]
-#})
 
+@app.route("/oberts-diaris")
+def oberts_diaris():
+	c=Consultes()
+	return jsonify(c.oberts_diaris())	
 
 @app.route("/obrim-setmanals")
 def obrim_setmanals():
@@ -43,7 +41,6 @@ def tanquem_mensuals():
 def obrim_mensuals():
 	c=Consultes()
 	return encapsula(c.obrim_mensuals())		
-
 
 def encapsula(tickets):
 	return jsonify({"rows":tickets})
