@@ -1,0 +1,97 @@
+<!doctype html>
+<html>
+<head>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<script src="http://code.highcharts.com/highcharts.js"></script>
+</head>
+<body>
+   <div class="container">
+
+      <div class="header clearfix">        
+        <h1><span class="glyphicon glyphicon-search"></span> Indicadors</h1>
+      </div>
+
+    <br><br>
+		<div id="chart"></div>
+		<script>
+    $(function () {
+      $.getJSON('/oberts-diaris', function (data) {          
+          $('#chart').highcharts({
+              chart: {
+                  zoomType: 'x'
+              },
+              title: {
+                  text: 'Tickets oberts i tancats'
+              },
+              xAxis: {
+                  categories: data['dia']
+              },
+              yAxis: {
+                  max:150,
+                  title: {
+                    text: 'Numero de tickets'
+                  }
+              },              
+              legend: {
+                  enabled: false
+              },
+              series: [{
+                  type: 'area',
+                  name: 'Oberts en total',
+                  data: data['oberts']
+              },{
+                  type: 'column',
+                  name: 'Obrim',
+                  data: data['obrim']
+              },{
+                  type: 'column',
+                  name: 'Tanquem',
+                  data: data['tanquem']
+              }]
+          });
+      });
+    });
+		</script>
+    <div id="chart2"></div>
+    <script>
+    $(function () {
+      $.getJSON('/tickets-per-dies-oberts', function (data) {
+          options={
+              title: {
+                  text: 'Quants tickets estan oberts n dies'
+              },
+              xAxis: {
+                  categories: []
+              },
+              yAxis: {
+                  title: {
+                    text: 'Numero de tickets'
+                  }
+              },              
+              legend: {
+                  enabled: false
+              },
+              series: [{
+                  type: 'pie',
+                  data: []
+              }]
+          };
+          console.log(options)
+          $(data['rows']).each(function(i,x) {
+            options.xAxis.categories.push(x["_id"]);
+            options.series[0].data.push(x["tickets"]);
+            console.log(x["_id"]);
+            console.log(x["tickets"]);
+          });
+          console.log(options);
+          $('#chart2').highcharts(options);
+      });
+    });
+    </script>
+
+
+</div>
+</body>
+</html>

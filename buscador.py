@@ -3,6 +3,7 @@ from flask import render_template
 from flask import request,jsonify
 
 from buscar import Consultes
+from indicadors import Indicadors
 app = Flask(__name__)
 
 @app.route("/")
@@ -11,6 +12,10 @@ def buscador():
 	c=Consultes()
 	l=c.busca(q)
 	return render_template('buscador.html', resultats=l,q=q)
+
+@app.route("/indicadors")
+def indicadors():
+	return render_template('indicadors.html')	
 
 @app.route("/oberts-mensuals")
 def oberts_setmanals():
@@ -41,6 +46,11 @@ def tanquem_mensuals():
 def obrim_mensuals():
 	c=Consultes()
 	return encapsula(c.obrim_mensuals())		
+
+@app.route("/tickets-per-dies-oberts")
+def tickets_per_dies_oberts():
+	i=Indicadors()
+	return encapsula(i.tickets_per_dies_oberts())	
 
 def encapsula(tickets):
 	return jsonify({"rows":tickets})
